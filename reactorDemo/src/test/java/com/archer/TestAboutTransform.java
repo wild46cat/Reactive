@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.awt.*;
 import java.time.Duration;
@@ -27,12 +28,32 @@ public class TestAboutTransform {
      */
     @Test
     public void testTransform() {
+        String key = "message";
+        String key2 = "message2";
         Function<Flux<String>, Flux<String>> filterAndMap =
                 f -> f.filter(color -> !color.equals("orange"))
-                        .map(String::toUpperCase);
+                        .flatMap(x -> {
+                            return Mono.subscriberContext().map(context -> {
+                                String aDefault = context.getOrDefault(key2, "defaultkey2");
+                                return x + " " + aDefault + " ";
+                            });
+                        });
+        Function<Flux<String>, Flux<String>> filterAndMap2 =
+                f -> f.filter(color -> !color.equals("orange"))
+                        .flatMap(x -> {
+                            return Mono.subscriberContext().map(context -> {
+                                String aDefault = context.getOrDefault(key, "defaultkey");
+                                return x + " " + aDefault + " ";
+                            });
+                        });
+        Function<Flux<String>, Flux<String>> addContext =
+                f -> f.subscriberContext(context -> context.put(key2, "value2..."));
 
         Flux<String> fluxWithTransform = Flux.fromIterable(Arrays.asList("blue", "green", "orange", "purple"))
-                .transform(filterAndMap).transform(filterAndMap);
+                .transform(filterAndMap)
+                .transform(filterAndMap2)
+                .transform(addContext)
+                .subscriberContext(context -> context.put(key, "world"));
         fluxWithTransform.subscribe(d -> System.out.println("Subscriber to Transformed MapAndFilter: " + d));
 //        fluxWithTransform.subscribe(d -> System.out.println("Subscriber to Transformed MapAndFilter: " + d));
     }
