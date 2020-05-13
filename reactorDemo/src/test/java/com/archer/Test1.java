@@ -34,19 +34,20 @@ public class Test1 {
     @Test
     public void test2() {
         Flux<String> stringFlux = Flux.fromArray(strArr);
-                stringFlux.subscribe(x -> System.out.println(x));
+        stringFlux.subscribe(x -> System.out.println(x));
     }
 
-    int tt(int a){
-        return a-1;
+    int tt(int a) {
+        return a - 1;
     }
+
     @Test
     public void Test21() {
         Flux.range(1, 6).map(i -> i * i)
-                .map(x-> {
-                    return x-1;
-                })
-                .subscribe(x-> System.out.println(x));
+//                .map(x -> {
+//                    return x + 1;
+//                })
+                .subscribe(x -> System.out.println(x));
     }
 
     @Test
@@ -59,8 +60,8 @@ public class Test1 {
 
         Flux<String> stringFlux2 = Flux.just("aa", "bb").flatMap(x -> {
             return Flux.fromArray(x.split(""));
-        }).map(x->{
-            return x+"xcvcv";
+        }).map(x -> {
+            return x + "xcvcv";
         });
         stringFlux2.subscribe(x -> System.out.println(x));
     }
@@ -68,7 +69,7 @@ public class Test1 {
     @Test
     public void test23() {
         StepVerifier.create(
-                Flux.just("flux", "mono")
+                Flux.just("selfFlux", "mono")
                         .flatMap(s -> Flux.fromArray(s.split(""))
                                 .delayElements(Duration.ofMillis(100)))
                         .doOnNext(System.out::print))
@@ -110,8 +111,8 @@ public class Test1 {
                     }
                 })
                 .checkpoint("map checkpoint");
-        flux.subscribe(x-> System.out.println(x));
-//        flux.subscribe(x -> System.out.println(x),
+        flux.subscribe(x -> System.out.println(x));
+//        selfFlux.subscribe(x -> System.out.println(x),
 //                error -> {
 //                    System.out.println("error:" + error);
 //                },
@@ -162,6 +163,7 @@ public class Test1 {
         Flux.generate(() -> 0,
                 (state, sink) -> {
                     System.out.println("now state is " + state);
+                    System.out.println(Thread.currentThread().getName());
                     if (state == 10) {
                         sink.complete();
                     }
@@ -241,7 +243,7 @@ public class Test1 {
         System.out.println("=========");
         Flux<String> alphabet2 = Flux.just(-1, 30, 13, 9, 20)
                 .map(x -> {
-                    return  alphabet(x);
+                    return alphabet(x);
                 }).filter(x -> {
                     return x != null;
                 });
@@ -250,10 +252,10 @@ public class Test1 {
     }
 
     @Test
-    public void t(){
-        Flux.just(-1, 30, 13, 9, 20).filter(x->{
+    public void t() {
+        Flux.just(-1, 30, 13, 9, 20).filter(x -> {
             return x > 0;
-        }).subscribe(x-> System.out.println(x));
+        }).subscribe(x -> System.out.println(x));
     }
 
     @Test
@@ -267,7 +269,7 @@ public class Test1 {
                 .map(i -> i + " second-- " + Thread.currentThread().getName());
         flux.subscribe(x -> System.out.println(x));
 
-//        new Thread(() -> flux.subscribe(System.out::println));
+//        new Thread(() -> selfFlux.subscribe(System.out::println));
     }
 
     @Test
@@ -275,7 +277,7 @@ public class Test1 {
         Scheduler s = Schedulers.newParallel("parallel-scheduler", 4);
 
         final Flux<String> flux = Flux
-                .range(1, 100)
+                .range(1, 3)
                 .map(i -> i + " first-- " + Thread.currentThread().getName())
                 .subscribeOn(s)
                 .map(i -> {
@@ -289,6 +291,7 @@ public class Test1 {
     @Test
     public void test15() {
         Scheduler s = Schedulers.newParallel("parallel-scheduler", 4);
+        Scheduler s1 = Schedulers.newParallel("parallel-scheduler-xx", 4);
         Scheduler ss = Schedulers.newParallel("parallel-new", 4);
 
         final Flux<String> flux = Flux
@@ -396,8 +399,8 @@ public class Test1 {
         Flux<String> source = Flux.just("thing1", "thing2");
 
         StepVerifier.create(appendBoomError(source))
-                .expectNext("thing2")
                 .expectNext("thing1")
+                .expectNext("thing2")
                 .expectErrorMessage("boom")
                 .verify();
     }
