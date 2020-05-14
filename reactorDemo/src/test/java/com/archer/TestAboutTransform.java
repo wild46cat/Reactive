@@ -1,5 +1,8 @@
 package com.archer;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import reactor.core.Disposable;
@@ -23,19 +26,31 @@ public class TestAboutTransform {
         countDownLatch.await();
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class Student {
+        private int age;
+        private String name;
+    }
+
     /**
-     * transform的作用
+     * transform的作用 形成模块
+     * 和context结合使用
      */
     @Test
     public void testTransform() {
         String key = "message";
         String key2 = "message2";
+        String key3 = "student";
+        Student s = new Student(10, "studentName");
         Function<Flux<String>, Flux<String>> filterAndMap =
                 f -> f.filter(color -> !color.equals("orange"))
                         .flatMap(x -> {
                             return Mono.subscriberContext().map(context -> {
                                 String aDefault = context.getOrDefault(key2, "defaultkey2");
-                                return x + " " + aDefault + " ";
+                                Student student = context.getOrDefault(key3, new Student());
+                                return x + " " + aDefault + " " + student.getName();
                             });
                         });
         Function<Flux<String>, Flux<String>> filterAndMap2 =
@@ -43,6 +58,8 @@ public class TestAboutTransform {
                         .flatMap(x -> {
                             return Mono.subscriberContext().map(context -> {
                                 String aDefault = context.getOrDefault(key, "defaultkey");
+                                Student student = context.getOrDefault(key3, new Student());
+                                context.put(key3, new Student(2, "newstudent"));
                                 return x + " " + aDefault + " ";
                             });
                         });
@@ -53,7 +70,8 @@ public class TestAboutTransform {
                 .transform(filterAndMap)
                 .transform(filterAndMap2)
                 .transform(addContext)
-                .subscriberContext(context -> context.put(key, "world"));
+                .subscriberContext(context -> context.put(key, "world"))
+                .subscriberContext(context -> context.put(key3, s));
         fluxWithTransform.subscribe(d -> System.out.println("Subscriber to Transformed MapAndFilter: " + d));
 //        fluxWithTransform.subscribe(d -> System.out.println("Subscriber to Transformed MapAndFilter: " + d));
     }
