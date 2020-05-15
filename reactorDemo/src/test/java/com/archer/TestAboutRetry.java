@@ -107,7 +107,7 @@ public class TestAboutRetry {
      */
     @Test
     public void testRetryWhen2() {
-        Retry<Object> retry = Retry.anyOf(Exception.class).retryMax(2)
+        Retry<Object> retry = Retry.allBut(IllegalArgumentException.class).retryMax(2)
                 .doOnRetry(x -> {
                     System.out.println("retry doing.. exception info:" + x.exception().getMessage());
                 });

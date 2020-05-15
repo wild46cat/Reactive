@@ -13,7 +13,7 @@ import java.util.function.Function;
 public class TestAboutCombineLatest {
 
     private static Flux<Integer> flux = Flux.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8))
-            .delayElements(Duration.ofMillis(1000));
+            .delayElements(Duration.ofMillis(1200));
     private static Flux<String> flux2 = Flux.fromIterable(Arrays.asList("a", "b", "c", "e"))
             .delayElements(Duration.ofMillis(3000));
 

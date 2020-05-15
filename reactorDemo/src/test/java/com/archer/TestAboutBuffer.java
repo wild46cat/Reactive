@@ -31,6 +31,7 @@ public class TestAboutBuffer {
     public void testBufferWithCount() {
         Flux<List<String>> buffer = flux.buffer(3);
         buffer.subscribe(x -> {
+            System.out.println(x.getClass().getName());
             System.out.println(x);
         });
     }
@@ -64,7 +65,7 @@ public class TestAboutBuffer {
     @Test
     public void testBufferWithOtherPublisher() throws InterruptedException {
         Flux.just(1, 2, 3, 4, 5, 6).delayElements(Duration.ofMillis(100))
-                .buffer(Flux.just("a", "b", "c", "d", "e").delayElements(Duration.ofMillis(300)))
+                .buffer(Flux.just("a", "b", "c", "d", "e").delayElements(Duration.ofMillis(400)))
                 .subscribe(x -> {
                     System.out.println(x);
                 });

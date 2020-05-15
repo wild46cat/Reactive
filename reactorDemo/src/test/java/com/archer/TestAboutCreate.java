@@ -56,7 +56,7 @@ public class TestAboutCreate {
                 x.next("====================aa" + i);
             }
             x.complete();
-        }, FluxSink.OverflowStrategy.DROP)
+        }, FluxSink.OverflowStrategy.BUFFER)
 //                .publishOn(Schedulers.newParallel("tt", 4), 1)
                 .publishOn(Schedulers.single(), 1)
                 .subscribe(x -> {
@@ -85,7 +85,6 @@ public class TestAboutCreate {
         }
 
     }
-
 
 
 }

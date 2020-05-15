@@ -24,9 +24,8 @@ public class TestAboutTimeout {
      */
     @Test
     public void testTimeout() throws InterruptedException {
-        flux2.timeout(Duration.ofMillis(100))
-                .subscribe(x -> System.out.println(x),
-                        e -> System.out.println("error occured timeout"));
+        flux2.timeout(Duration.ofMillis(300))
+                .subscribe(x -> System.out.println(x));
         holdTheWorld();
     }
 

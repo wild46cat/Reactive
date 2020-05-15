@@ -59,7 +59,7 @@ public class TestAboutLimit {
             }
             x.complete();
         }, FluxSink.OverflowStrategy.DROP)
-//                .limitRate(3)
+                .limitRate(3)
                 .publishOn(Schedulers.single(), 1)
                 .subscribe(x -> {
                     System.out.println(x);

@@ -35,18 +35,18 @@ public class TestAboutOnBackPressure {
             }
             x.complete();
         })
-                .onBackpressureBuffer(5, BufferOverflowStrategy.DROP_OLDEST)
-//                .onBackpressureBuffer(2, x -> {
-//                    System.out.println("--------------------overflow " + x);
-//                }, BufferOverflowStrategy.DROP_LATEST)
+//                .onBackpressureBuffer(5, BufferOverflowStrategy.DROP_OLDEST)
+                .onBackpressureBuffer(2, x -> {
+                    System.out.println("--------------------overflow " + x);
+                }, BufferOverflowStrategy.DROP_LATEST)
 //                .onBackpressureBuffer(Duration.ofMillis(200), 3, x -> {
 //                    System.out.println("--------------------overflow " + x);
 //                })
                 .publishOn(Schedulers.single(), 1)
                 .subscribe(x -> {
-                    System.out.println(x);
                     try {
                         Thread.sleep(1000);
+                        System.out.println(x);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

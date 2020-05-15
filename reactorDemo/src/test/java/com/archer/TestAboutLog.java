@@ -24,7 +24,7 @@ public class TestAboutLog {
 
     @Test
     public void testLog() {
-        flux.log().subscribe();
+        flux.log().subscribe(x -> System.out.println(x));
     }
 
 }

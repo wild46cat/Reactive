@@ -29,10 +29,13 @@ public class TestAboutInterval {
     public void testInterval() throws InterruptedException {
         Flux.interval(Duration.ofMillis(500))
                 .subscribe(x -> {
-                    System.out.println(x);
+                    t();
                 });
 
         holdTheWorld();
+    }
+    public void t(){
+        System.out.println("aa");
     }
 
     @Test

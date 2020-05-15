@@ -2,6 +2,7 @@ package com.archer;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
@@ -52,6 +53,30 @@ public class TestAboutParallel {
                 .subscribe(x -> {
                     System.out.println(Thread.currentThread().getName() + "  " + x);
                 });
+    }
+
+    /**
+     * 模拟请求多个gprc或者http的阻塞行为
+     */
+    @Test
+    public void testParallel5() throws InterruptedException {
+        Integer start = Flux.just("start").flatMap(x -> {
+            return Flux.just(300, 200, 100)
+//                    .publishOn(Schedulers.parallel(), 3)
+                    .parallel(3).runOn(Schedulers.parallel(), 3)
+                    .flatMap(k -> {
+                        try {
+                            System.out.println("begin sleep " + Thread.currentThread().getName() + "  " + k);
+                            Thread.sleep(k);
+                            System.out.println("end sleep " + k);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return Mono.just(k);
+                    });
+        }).blockFirst();
+        System.out.println(start);
+        holdTheWorld();
     }
 
 }
