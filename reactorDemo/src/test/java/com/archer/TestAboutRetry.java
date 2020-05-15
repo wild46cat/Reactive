@@ -5,8 +5,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.retry.Retry;
 
-import java.io.IOException;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -59,6 +57,8 @@ public class TestAboutRetry {
                 })
                 .subscribe(x -> {
                     System.out.println(x);
+                }, e -> {
+                    System.out.println("err------>" + e);
                 });
     }
 
@@ -83,6 +83,7 @@ public class TestAboutRetry {
     /**
      * 注意，这里的retry是在reactor-extra包中的
      * 推荐这种用法，更方便更灵活
+     * 强调这里的OnErrorContinue是生效的(这个很有意义)
      */
     @Test
     public void testRetryWhen() {

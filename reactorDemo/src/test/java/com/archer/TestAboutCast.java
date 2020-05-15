@@ -9,7 +9,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-public class TestAboutCase {
+public class TestAboutCast {
 
     private static Flux<c2> flux = Flux.fromIterable(Arrays.asList(
             new c2(1, "red"),

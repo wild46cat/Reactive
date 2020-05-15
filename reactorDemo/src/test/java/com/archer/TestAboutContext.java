@@ -32,7 +32,8 @@ public class TestAboutContext {
         Mono.just("hello")
                 .flatMap(x -> {
                     return Mono.subscriberContext().map(context -> {
-                        return x + " " + context.getOrDefault(key, "default") + " " + context.getOrDefault(key2, "...");
+                        return x + " " + context.getOrDefault(key, "default") +
+                                " " + context.getOrDefault(key2, "...");
                     });
                 })
                 .subscriberContext(context -> {

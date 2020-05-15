@@ -35,6 +35,7 @@ public class TestAboutLimit {
     @Test
     public void testLimitRate() throws InterruptedException {
         Flux.interval(Duration.ofSeconds(1)).limitRate(2)
+                .log()
                 .subscribe(x -> {
                     System.out.println(x);
                 });
@@ -57,8 +58,8 @@ public class TestAboutLimit {
                 x.next("====================aa" + i);
             }
             x.complete();
-        }, FluxSink.OverflowStrategy.LATEST)
-//                .limitRate(20)
+        }, FluxSink.OverflowStrategy.DROP)
+//                .limitRate(3)
                 .publishOn(Schedulers.single(), 1)
                 .subscribe(x -> {
                     System.out.println(x);
@@ -72,6 +73,9 @@ public class TestAboutLimit {
     }
 
 
+    /**
+     * limit Request
+     */
     @Test
     public void testLimitRequest() {
         Flux.range(1, 10).limitRequest(3)
